@@ -638,7 +638,11 @@
     <div class="field-row col-2">
       <div class="field" id="f-fechaNac">
         <label>Fecha de nacimiento <span class="req">*</span></label>
-        <input type="date" id="fechaNac" autocomplete="bday" />
+        <div class="autocomplete-wrap">
+          <input type="text" id="fechaNac" inputmode="numeric" autocomplete="bday" maxlength="10" />
+          <span class="mirror-text" id="fechaNacMirror" aria-hidden="true"></span>
+          <span class="ghost-text" id="fechaNacGhost" aria-hidden="true"></span>
+        </div>
         <span class="msg"></span>
       </div>
       <div class="field" id="f-genero">
@@ -893,15 +897,10 @@ document.addEventListener('DOMContentLoaded', () => {
   setupPasswordValidation();
   setupTipoDocKeyboardSupport();
   setupFechaNacKeyboardSupport();
+  setupFechaNacHint();
   setupEmailAutocomplete('email', 'emailConf');
   setupEmailAutocomplete('emailConf', 'telPais');
   updateProgress();
-
-  // Set max date for birth date (must be 18+ years old)
-  const maxBirth = new Date();
-  maxBirth.setFullYear(maxBirth.getFullYear() - 0);
-  document.getElementById('fechaNac').setAttribute('max', maxBirth.toISOString().split('T')[0]);
-
 });
 
 /* ───────────────── PROVINCES ───────────────── */
@@ -1026,6 +1025,35 @@ function setupFechaNacKeyboardSupport() {
       genero.focus();
     }
   });
+}
+
+function updateFechaNacHint() {
+  const input = document.getElementById('fechaNac');
+  const mirror = document.getElementById('fechaNacMirror');
+  const ghost = document.getElementById('fechaNacGhost');
+  if (!input || !mirror || !ghost) return;
+
+  const mask = 'dd/mm/yyyy';
+  const value = input.value.slice(0, mask.length);
+
+  mirror.textContent = value;
+  const mirrorWidth = mirror.getBoundingClientRect().width;
+  const ghostLeft = 14 + mirrorWidth - input.scrollLeft;
+
+  ghost.style.left = `${Math.min(ghostLeft, input.clientWidth - 28)}px`;
+  ghost.textContent = mask.slice(value.length);
+}
+
+function setupFechaNacHint() {
+  const fechaNac = document.getElementById('fechaNac');
+  if (!fechaNac) return;
+
+  fechaNac.addEventListener('input', updateFechaNacHint);
+  fechaNac.addEventListener('focus', updateFechaNacHint);
+  fechaNac.addEventListener('click', updateFechaNacHint);
+  fechaNac.addEventListener('blur', updateFechaNacHint);
+
+  updateFechaNacHint();
 }
 
 function getEmailSuggestion(value) {
@@ -1211,6 +1239,27 @@ function validateNroDocField() {
   return true;
 }
 
+function parseDateDmy(value) {
+  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return { date: null, error: 'format' };
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+
+  if (month < 1 || month > 12) return { date: null, error: 'month' };
+  if (day < 1 || day > 31) return { date: null, error: 'day' };
+  if (year < 1900) return { date: null, error: 'year' };
+
+  const date = new Date(year, month - 1, day);
+  const isRealDate =
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day;
+
+  return isRealDate ? { date, error: null } : { date: null, error: 'invalidDate' };
+}
+
 function validateFechaNacField() {
   const fn = getVal('fechaNac');
   if (!fn) {
@@ -1218,17 +1267,32 @@ function validateFechaNacField() {
     return false;
   }
 
-  const birth = new Date(fn);
+  const parsedBirth = parseDateDmy(fn);
+  if (parsedBirth.error) {
+    if (parsedBirth.error === 'month') {
+      setField('fechaNac', 'error', 'Seleccioná un mes entre 01 y 12');
+      return false;
+    }
+    if (parsedBirth.error === 'format') {
+      setField('fechaNac', 'error', 'Usá el formato dd/mm/yyyy');
+      return false;
+    }
+    setField('fechaNac', 'error', 'Ingresá una fecha válida');
+    return false;
+  }
+
+  const birth = parsedBirth.date;
+
   const today = new Date();
   const age = today.getFullYear() - birth.getFullYear() -
     (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
 
   if (birth > today) {
-    setField('fechaNac', 'error', 'La fecha no puede ser en el futuro');
+    setField('fechaNac', 'error', 'No se permiten fechas del futuro');
     return false;
   }
   if (age < 13) {
-    setField('fechaNac', 'error', 'Debés tener al menos 13 años');
+    setField('fechaNac', 'error', 'Debés tener 13 años o más');
     return false;
   }
 
@@ -1470,7 +1534,17 @@ function setupLiveValidation() {
   document.getElementById('tipoDoc').addEventListener('change', validateTipoDocField);
   document.getElementById('tipoDoc').addEventListener('blur', validateTipoDocField);
   document.getElementById('nroDoc').addEventListener('blur', validateNroDocField);
-  document.getElementById('fechaNac').addEventListener('change', validateFechaNacField);
+  document.getElementById('fechaNac').addEventListener('input', function() {
+    const digits = this.value.replace(/\D/g, '').slice(0, 8);
+    const parts = [];
+
+    if (digits.length > 0) parts.push(digits.slice(0, 2));
+    if (digits.length > 2) parts.push(digits.slice(2, 4));
+    if (digits.length > 4) parts.push(digits.slice(4, 8));
+
+    this.value = parts.join('/');
+    updateFechaNacHint();
+  });
   document.getElementById('fechaNac').addEventListener('blur', validateFechaNacField);
   document.getElementById('telefono').addEventListener('blur', validateTelefonoField);
   document.getElementById('numero').addEventListener('blur', validateNumeroField);
@@ -1581,6 +1655,7 @@ function buildReview() {
 
 function formatDate(str) {
   if (!str) return '—';
+  if (str.includes('/')) return str;
   const [y, m, d] = str.split('-');
   return `${d}/${m}/${y}`;
 }
