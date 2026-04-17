@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solicitud de Alta de Servicio</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #F5F2EE;
+      --surface:     #FFFFFF;
+      --ink:         #1A1714;
+      --ink-soft:    #6B6560;
+      --ink-lighter: #A09A95;
+      --accent:      #C9502A;
+      --accent-dark: #A33D1E;
+      --accent-bg:   #FDF1ED;
+      --border:      #DDD8D3;
+      --border-focus:#C9502A;
+      --success:     #2D7A4F;
+      --success-bg:  #EDF7F2;
+      --error:       #C9502A;
+      --error-bg:    #FDF1ED;
+      --radius:      10px;
+      --radius-sm:   6px;
+      --shadow:      0 2px 8px rgba(26,23,20,.08);
+      --shadow-lg:   0 8px 32px rgba(26,23,20,.12);
+      --transition:  .18s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 40px 16px 80px;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      max-width: 680px;
+      margin: 0 auto 40px;
+      animation: fadeUp .5s ease both;
+    }
+    .page-header .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-bg);
+      border: 1px solid #F0C4B5;
+      border-radius: 100px;
+      padding: 4px 12px;
+      margin-bottom: 16px;
+    }
+    .page-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+    .page-header p {
+      font-size: 15px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      max-width: 500px;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      max-width: 680px;
+      margin: 0 auto 32px;
+      animation: fadeUp .5s .05s ease both;
+    }
+    .progress-steps {
+      display: flex;
+      gap: 0;
+      align-items: center;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+    .step-item:last-child { flex: 0; }
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-lighter);
+      flex-shrink: 0;
+      transition: var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+    .step-circle.active {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+    .step-circle.done {
+      border-color: var(--success);
+      background: var(--success);
+      color: #fff;
+    }
+    .step-circle.done::after { content: '✓'; font-size: 13px; }
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      margin: 0 4px;
+      transition: background .3s;
+    }
+    .step-line.done { background: var(--success); }
+    .step-label {
+      font-size: 11px;
+      color: var(--ink-lighter);
+      margin-top: 6px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .step-label.active { color: var(--accent); }
+    .step-label.done { color: var(--success); }
+    .steps-labels {
+      display: flex;
+      margin-top: 8px;
+    }
+    .steps-labels .lbl { flex: 1; text-align: center; font-size: 11px; font-weight: 500; color: var(--ink-lighter); }
+    .steps-labels .lbl.active { color: var(--accent); }
+    .steps-labels .lbl.done { color: var(--success); }
+    .steps-labels .lbl:last-child { flex: 0 0 32px; }
+
+    /* ── Card / Form ── */
+    .form-card {
+      max-width: 680px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 18px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: fadeUp .5s .1s ease both;
+    }
+
+    /* Section */
+    .form-section {
+      padding: 32px 36px;
+      border-bottom: 1px solid var(--border);
+      display: none;
+    }
+    .form-section.active { display: block; }
+
+    @media (max-width: 540px) {
+      .form-section { padding: 24px 20px; }
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .section-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--accent-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .section-title h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      color: var(--ink);
+      letter-spacing: -.01em;
+    }
+    .section-title p {
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin-top: 2px;
+    }
+
+    /* Grid */
+    .field-row {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 16px;
+      grid-template-columns: 1fr;
+    }
+    .field-row.col-2,
+    .field-row.col-3,
+    .field-row.col-1 { grid-template-columns: 1fr; }
+    @media (max-width: 540px) {
+      .field-row.col-2, .field-row.col-3 { grid-template-columns: 1fr; }
+    }
+
+    /* Field */
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field label .req { color: var(--accent); font-size: 14px; line-height: 1; }
+    .field label .opt {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--ink-lighter);
+      background: var(--bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      width: 100%;
+      outline: none;
+      transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+      -webkit-appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A09A95' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+    .field textarea { resize: vertical; min-height: 80px; }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--ink-lighter); }
+
+    .field input:hover,
+    .field select:hover,
+    .field textarea:hover {
+      border-color: #BFB9B4;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--border-focus);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(201,80,42,.12);
+    }
+
+    /* States */
+    .field.valid input,
+    .field.valid select,
+    .field.valid textarea {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+    .field.error input,
+    .field.error select,
+    .field.error textarea {
+      border-color: var(--error);
+      background: var(--error-bg);
+    }
+    .field .msg {
+      font-size: 12px;
+      min-height: 16px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field.error .msg { color: var(--error); }
+    .field.valid .msg { color: var(--success); }
+    .field .hint { font-size: 12px; color: var(--ink-lighter); }
+
+    /* Phone prefix row */
+    .phone-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(110px, 128px) 1fr;
+      align-items: stretch;
+    }
+    .phone-row select,
+    .phone-row input { width: 100%; }
+
+    /* Password strength */
+    .strength-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .strength-bar .fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0;
+      transition: width .3s, background .3s;
+    }
+    .strength-label { font-size: 11px; color: var(--ink-lighter); margin-top: 6px; display: inline-block; }
+    .password-rules {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .password-rule {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--ink-lighter);
+      transition: color var(--transition);
+    }
+    .password-rule .rule-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+    .password-rule.pending .rule-icon {
+      color: var(--ink-lighter);
+      border-color: var(--border);
+    }
+    .password-rule.unmet {
+      color: var(--error);
+    }
+    .password-rule.unmet .rule-icon {
+      color: var(--error);
+      border-color: #F0C4B5;
+      background: var(--error-bg);
+    }
+    .password-rule.met {
+      color: var(--success);
+    }
+    .password-rule.met .rule-icon {
+      color: var(--success);
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    /* ── Navigation buttons ── */
+    .form-nav {
+      padding: 24px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      gap: 12px;
+    }
+    @media (max-width: 540px) { .form-nav { padding: 20px; } }
+
+    .btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 24px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink-soft);
+      border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(201,80,42,.3);
+    }
+    .btn-primary:hover { background: var(--accent-dark); box-shadow: 0 4px 14px rgba(201,80,42,.4); }
+    .btn-primary:active { transform: scale(.98); }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(45,122,79,.3);
+    }
+    .btn-success:hover { background: #236040; }
+
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* ── Summary / Review section ── */
+    .review-section { padding: 32px 36px; display: none; }
+    .review-section.active { display: block; }
+    .review-group { margin-bottom: 24px; }
+    .review-group h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 16px;
+      color: var(--ink);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+    @media (max-width: 480px) { .review-grid { grid-template-columns: 1fr; } }
+    .review-item { }
+    .review-item .rl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-lighter); }
+    .review-item .rv { font-size: 14px; color: var(--ink); margin-top: 2px; }
+
+    /* ── Success screen ── */
+    .success-screen {
+      padding: 64px 36px;
+      text-align: center;
+      display: none;
+    }
+    .success-screen.active { display: block; }
+    .success-screen .icon {
+      width: 72px;
+      height: 72px;
+      background: var(--success-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 20px;
+      animation: popIn .4s .1s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .success-screen h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .success-screen p { color: var(--ink-soft); font-size: 15px; line-height: 1.6; max-width: 400px; margin: 0 auto; }
+    .success-screen .ref {
+      display: inline-block;
+      margin-top: 20px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .success-screen .ref strong { color: var(--ink); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-6px); }
+      40%     { transform: translateX(6px); }
+      60%     { transform: translateX(-4px); }
+      80%     { transform: translateX(4px); }
+    }
+    .shake { animation: shake .35s ease; }
+
+    /* ── Decorative top bar ── */
+    .form-card::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #E8834F, #F5A96A);
+    }
+
+    /* Required legend */
+    .req-legend {
+      font-size: 12px;
+      color: var(--ink-lighter);
+      margin-bottom: 20px;
+    }
+    .req-legend span { color: var(--accent); }
+
+    /* Email autocomplete */
+    .autocomplete-wrap { position: relative; }
+    .autocomplete-wrap .mirror-text,
+    .autocomplete-wrap .ghost-text {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      transform: translateY(-50%);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.4;
+      white-space: pre;
+      pointer-events: none;
+    }
+    .autocomplete-wrap .mirror-text { visibility: hidden; }
+    .autocomplete-wrap .ghost-text {
+      color: var(--ink-lighter);
+      max-width: calc(100% - 28px);
+      overflow: hidden;
+      text-overflow: clip;
+    }
+
+    /* Toggle password */
+    .input-wrap { position: relative; }
+    .input-wrap input { padding-right: 42px; }
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--ink-lighter);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+    }
+    .toggle-pw:hover { color: var(--ink-soft); }
+  </style>
+</head>
+<body>
+
+<!-- Page header -->
+<div class="page-header">
+  <span class="badge">✦ Solicitud de servicio</span>
+  <h1>Alta de Servicio</h1>
+  <p>Completá el formulario para registrarte. El proceso toma menos de 3 minutos y tus datos están protegidos.</p>
+</div>
+
+<!-- Progress -->
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-steps">
+    <div class="step-item">
+      <div class="step-circle active" id="sc1">1</div>
+      <div class="step-line" id="sl1"></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" id="sc2">2</div>
+      <div class="step-line" id="sl2"></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" id="sc3">3</div>
+      <div class="step-line" id="sl3"></div>
+    </div>
+    <div class="step-item">
+      <div class="step-circle" id="sc4">4</div>
+    </div>
+  </div>
+  <div class="steps-labels">
+    <div class="lbl active" id="lbl1">Datos personales</div>
+    <div class="lbl" id="lbl2">Contacto</div>
+    <div class="lbl" id="lbl3">Dirección</div>
+    <div class="lbl" id="lbl4" style="flex:0 0 32px;text-align:center">Revisión</div>
+  </div>
+</div>
+
+<!-- Form card -->
+<div class="form-card" id="formCard">
+
+  <!-- ══════════════════ SECCIÓN 1: DATOS PERSONALES ══════════════════ -->
+  <div class="form-section active" id="sec1">
+    <div class="section-title">
+      <div class="section-icon">👤</div>
+      <div>
+        <h2>Datos Personales</h2>
+        <p>Información de identidad del solicitante</p>
+      </div>
+    </div>
+    <p class="req-legend"><span>*</span> Campo obligatorio</p>
+
+    <div class="field-row col-2">
+      <div class="field" id="f-nombre">
+        <label>Nombre/s <span class="req">*</span></label>
+        <input type="text" id="nombre" placeholder="Ej: Juan Fermín " autocomplete="given-name" />
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-apellido">
+        <label>Apellido/s <span class="req">*</span></label>
+        <input type="text" id="apellido" placeholder="Ej: González" autocomplete="family-name" />
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-2">
+      <div class="field" id="f-tipoDoc">
+        <label>Tipo de documento <span class="req">*</span></label>
+        <select id="tipoDoc">
+          <option value="">Seleccioná...</option>
+          <option value="DNI">DNI</option>
+          <option value="CUIL">CUIL</option>
+          <option value="CUIT">CUIT</option>
+          <option value="Pasaporte">Pasaporte</option>
+          <option value="Otro">Otro</option>
+        </select>
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-nroDoc">
+        <label>Número de documento <span class="req">*</span></label>
+        <input type="text" id="nroDoc" placeholder="Ej: 30456789" inputmode="numeric" autocomplete="off" />
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-2">
+      <div class="field" id="f-fechaNac">
+        <label>Fecha de nacimiento <span class="req">*</span></label>
+        <input type="date" id="fechaNac" autocomplete="bday" />
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-genero">
+        <label>Género <span class="opt">opcional</span></label>
+        <select id="genero">
+          <option value="">Prefiero no indicar</option>
+          <option value="Femenino">Femenino</option>
+          <option value="Masculino">Masculino</option>
+          <option value="No binario">No binario</option>
+          <option value="Otro">Otro</option>
+        </select>
+        <span class="msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ SECCIÓN 2: DATOS DE CONTACTO ══════════════════ -->
+  <div class="form-section" id="sec2">
+    <div class="section-title">
+      <div class="section-icon">📬</div>
+      <div>
+        <h2>Datos de Contacto</h2>
+        <p>Canales para comunicarnos con vos</p>
+      </div>
+    </div>
+    <p class="req-legend"><span>*</span> Campo obligatorio</p>
+
+    <div class="field-row col-1">
+      <div class="field" id="f-email">
+        <label>Correo electrónico <span class="req">*</span></label>
+        <div class="autocomplete-wrap">
+          <input type="email" id="email" placeholder="ejemplo@correo.com" autocomplete="email" inputmode="email" />
+          <span class="mirror-text" id="emailMirror" aria-hidden="true"></span>
+          <span class="ghost-text" id="emailGhost" aria-hidden="true"></span>
+        </div>
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-1">
+      <div class="field" id="f-emailConf">
+        <label>Confirmá tu correo <span class="req">*</span></label>
+        <div class="autocomplete-wrap">
+          <input type="email" id="emailConf" placeholder="Repetí tu correo electrónico" autocomplete="off" inputmode="email" />
+          <span class="mirror-text" id="emailConfMirror" aria-hidden="true"></span>
+          <span class="ghost-text" id="emailConfGhost" aria-hidden="true"></span>
+        </div>
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-1">
+      <div class="field" id="f-telefono">
+        <label>Teléfono / Celular <span class="req">*</span></label>
+        <div class="phone-row">
+          <select id="telPais">
+            <option value="+54">🇦🇷 +54</option>
+            <option value="+598">🇺🇾 +598</option>
+            <option value="+591">🇧🇴 +591</option>
+            <option value="+56">🇨🇱 +56</option>
+            <option value="+55">🇧🇷 +55</option>
+            <option value="+51">🇵🇪 +51</option>
+            <option value="+595">🇵🇾 +595</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+34">🇪🇸 +34</option>
+          </select>
+          <input type="text" id="telefono" placeholder="Ej: 1145678901" inputmode="numeric" autocomplete="tel-national" maxlength="11" />
+        </div>
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-1">
+      <div class="field" id="f-telAlt">
+        <label>Teléfono alternativo <span class="opt">opcional</span></label>
+        <input type="text" id="telAlt" placeholder="Otro número de contacto" inputmode="numeric" autocomplete="off" maxlength="11" />
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-1">
+      <div class="field" id="f-password">
+        <label>Contraseña de acceso <span class="req">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+          <button class="toggle-pw" type="button" onclick="togglePw('password', this)" title="Mostrar/ocultar contraseña">
+            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="strength-bar"><div class="fill" id="strengthFill"></div></div>
+        <span class="strength-label" id="strengthLabel">Debe cumplir estos requisitos</span>
+        <ul class="password-rules" id="passwordRules">
+          <li class="password-rule pending" id="pwRuleLength">
+            <span class="rule-icon">•</span>
+            <span>Al menos 8 caracteres</span>
+          </li>
+          <li class="password-rule pending" id="pwRuleUpper">
+            <span class="rule-icon">•</span>
+            <span>Al menos 1 letra mayúscula</span>
+          </li>
+          <li class="password-rule pending" id="pwRuleNumber">
+            <span class="rule-icon">•</span>
+            <span>Al menos 1 número</span>
+          </li>
+        </ul>
+        <span class="msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ SECCIÓN 3: DIRECCIÓN ══════════════════ -->
+  <div class="form-section" id="sec3">
+    <div class="section-title">
+      <div class="section-icon">📍</div>
+      <div>
+        <h2>Dirección</h2>
+        <p>Domicilio del solicitante</p>
+      </div>
+    </div>
+    <p class="req-legend"><span>*</span> Campo obligatorio</p>
+
+    <div class="field-row col-2">
+      <div class="field" id="f-pais">
+        <label>País de residencia <span class="req">*</span></label>
+        <select id="pais" onchange="onPaisChange()">
+          <option value="">Seleccioná...</option>
+          <option value="Argentina" selected>Argentina</option>
+          <option value="Bolivia">Bolivia</option>
+          <option value="Brasil">Brasil</option>
+          <option value="Chile">Chile</option>
+          <option value="Colombia">Colombia</option>
+          <option value="Ecuador">Ecuador</option>
+          <option value="Paraguay">Paraguay</option>
+          <option value="Perú">Perú</option>
+          <option value="Uruguay">Uruguay</option>
+          <option value="Venezuela">Venezuela</option>
+        </select>
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-provincia">
+        <label>Provincia / Estado <span class="req">*</span></label>
+        <select id="provincia">
+          <option value="">Seleccioná primero el país</option>
+        </select>
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-2">
+      <div class="field" id="f-localidad">
+        <label>Localidad / Ciudad <span class="req">*</span></label>
+        <input type="text" id="localidad" placeholder="Ej: Campana" autocomplete="address-level2" />
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-codPostal">
+        <label>Código postal <span class="req">*</span></label>
+        <input type="text" id="codPostal" placeholder="Ej: B2804" inputmode="text" autocomplete="postal-code" maxlength="8" />
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-2">
+      <div class="field" id="f-calle">
+        <label>Calle <span class="req">*</span></label>
+        <input type="text" id="calle" placeholder="Ej: Av. Pte. Perón" autocomplete="address-line1" />
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-numero">
+        <label>Número <span class="req">*</span></label>
+        <input type="text" id="numero" placeholder="Ej: 1234" inputmode="numeric" maxlength="6" />
+        <span class="msg"></span>
+      </div>
+    </div>
+
+    <div class="field-row col-3">
+      <div class="field" id="f-piso">
+        <label>Piso <span class="opt">opcional</span></label>
+        <input type="text" id="piso" placeholder="Ej: 3" />
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-depto">
+        <label>Depto. <span class="opt">opcional</span></label>
+        <input type="text" id="depto" placeholder="Ej: A" />
+        <span class="msg"></span>
+      </div>
+      <div class="field" id="f-entrecalles">
+        <label>Entre calles <span class="opt">opcional</span></label>
+        <input type="text" id="entrecalles" placeholder="Ej: San Martín y Belgrano" />
+        <span class="msg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ SECCIÓN 4: REVISIÓN ══════════════════ -->
+  <div class="review-section" id="sec4">
+    <div class="section-title">
+      <div class="section-icon">📋</div>
+      <div>
+        <h2>Revisión de datos</h2>
+        <p>Verificá que todo esté correcto antes de enviar</p>
+      </div>
+    </div>
+    <div id="reviewContent"></div>
+  </div>
+
+  <!-- Success -->
+  <div class="success-screen" id="successScreen">
+    <div class="icon">✅</div>
+    <h2>¡Solicitud enviada!</h2>
+    <p>Recibimos tu solicitud de alta de servicio. En breve te contactaremos por correo electrónico para confirmar el proceso.</p>
+    <div class="ref">Número de referencia: <strong id="refNum"></strong></div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="form-nav" id="formNav">
+    <button class="btn btn-ghost" id="btnBack" onclick="goBack()" style="visibility:hidden">← Anterior</button>
+    <button class="btn btn-primary" id="btnNext" onclick="goNext()">Siguiente →</button>
+  </div>
+
+</div>
+
+<script>
+/* ───────────────── DATA ───────────────── */
+const provinciasArg = [
+  'Buenos Aires','Catamarca','Chaco','Chubut','Córdoba','Corrientes',
+  'Entre Ríos','Formosa','Jujuy','La Pampa','La Rioja','Mendoza',
+  'Misiones','Neuquén','Río Negro','Salta','San Juan','San Luis',
+  'Santa Cruz','Santa Fe','Santiago del Estero','Tierra del Fuego',
+  'Tucumán','CABA'
+];
+
+/* ───────────────── STATE ───────────────── */
+let currentStep = 1;
+const TOTAL_STEPS = 4;
+const commonEmailDomains = [
+  'gmail.com',
+  'hotmail.com',
+  'outlook.com',
+  'yahoo.com',
+  'icloud.com',
+  'live.com',
+  'protonmail.com',
+  'aol.com',
+  'gmx.com',
+  'zoho.com',
+];
+
+/* ───────────────── INIT ───────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  onPaisChange();
+  setupLiveValidation();
+  setupPasswordValidation();
+  setupTipoDocKeyboardSupport();
+  setupFechaNacKeyboardSupport();
+  setupEmailAutocomplete('email', 'emailConf');
+  setupEmailAutocomplete('emailConf', 'telPais');
+  updateProgress();
+
+  // Set max date for birth date (must be 18+ years old)
+  const maxBirth = new Date();
+  maxBirth.setFullYear(maxBirth.getFullYear() - 0);
+  document.getElementById('fechaNac').setAttribute('max', maxBirth.toISOString().split('T')[0]);
+
+});
+
+/* ───────────────── PROVINCES ───────────────── */
+function onPaisChange() {
+  const pais = document.getElementById('pais').value;
+  const sel = document.getElementById('provincia');
+  sel.innerHTML = '';
+
+  let opts = [];
+  if (pais === 'Argentina') opts = provinciasArg;
+  else if (pais) opts = ['Región / Estado 1','Región / Estado 2'];
+  else opts = [];
+
+  if (!opts.length) {
+    sel.innerHTML = '<option value="">Seleccioná primero el país</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">Seleccioná...</option>';
+  opts.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = p;
+    sel.appendChild(o);
+  });
+}
+
+/* ───────────────── PROGRESS UI ───────────────── */
+function updateProgress() {
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const c = document.getElementById('sc' + i);
+    const l = document.getElementById('lbl' + i);
+    const line = document.getElementById('sl' + i);
+
+    c.className = 'step-circle';
+    l.className = 'lbl';
+    if (line) line.className = 'step-line';
+
+    if (i < currentStep) {
+      c.className = 'step-circle done';
+      c.textContent = '';
+      l.className = 'lbl done';
+      if (line) line.className = 'step-line done';
+    } else if (i === currentStep) {
+      c.className = 'step-circle active';
+      c.textContent = i;
+      l.className = 'lbl active';
+    } else {
+      c.textContent = i;
+    }
+  }
+
+  const btnBack = document.getElementById('btnBack');
+  const btnNext = document.getElementById('btnNext');
+  btnBack.style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+
+  if (currentStep === TOTAL_STEPS) {
+    btnNext.className = 'btn btn-success';
+    btnNext.textContent = '✓ Confirmar y enviar';
+  } else {
+    btnNext.className = 'btn btn-primary';
+    btnNext.textContent = 'Siguiente →';
+  }
+
+  // Hide nav on success
+  if (document.getElementById('successScreen').classList.contains('active')) {
+    document.getElementById('formNav').style.display = 'none';
+    document.getElementById('progressWrap').style.display = 'none';
+  }
+}
+
+function normalizeText(value) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+function setupTipoDocKeyboardSupport() {
+  const apellido = document.getElementById('apellido');
+  const tipoDoc = document.getElementById('tipoDoc');
+  if (!apellido || !tipoDoc) return;
+
+  apellido.addEventListener('keydown', event => {
+    if (event.key === 'Tab' && !event.shiftKey) {
+      event.preventDefault();
+      tipoDoc.focus();
+    }
+  });
+
+  let typedBuffer = '';
+  let clearTypedBufferTimeout;
+
+  tipoDoc.addEventListener('keydown', event => {
+    if (event.key.length !== 1 || event.altKey || event.ctrlKey || event.metaKey) return;
+
+    typedBuffer += event.key;
+    clearTimeout(clearTypedBufferTimeout);
+    clearTypedBufferTimeout = setTimeout(() => {
+      typedBuffer = '';
+    }, 700);
+
+    const normalizedTypedBuffer = normalizeText(typedBuffer);
+    const matchingOption = Array.from(tipoDoc.options).find(option =>
+      option.value && normalizeText(option.textContent).startsWith(normalizedTypedBuffer)
+    );
+
+    if (!matchingOption) return;
+
+    event.preventDefault();
+    tipoDoc.value = matchingOption.value;
+    validateTipoDocField();
+  });
+}
+
+function setupFechaNacKeyboardSupport() {
+  const fechaNac = document.getElementById('fechaNac');
+  const genero = document.getElementById('genero');
+  if (!fechaNac || !genero) return;
+
+  fechaNac.addEventListener('keydown', event => {
+    if (event.key === 'Tab' && !event.shiftKey) {
+      event.preventDefault();
+      genero.focus();
+    }
+  });
+}
+
+function getEmailSuggestion(value) {
+  if (!value || /\s/.test(value)) return null;
+
+  const parts = value.split('@');
+  if (parts.length !== 2) return null;
+
+  const [localPart, domainFragmentRaw] = parts;
+  const domainFragment = domainFragmentRaw.toLowerCase();
+
+  if (!localPart || !domainFragment) return null;
+
+  const suggestedDomain = commonEmailDomains.find(domain =>
+    domain.startsWith(domainFragment) && domain !== domainFragment
+  );
+
+  if (!suggestedDomain) return null;
+
+  return {
+    fullValue: `${localPart}@${suggestedDomain}`,
+    suffix: suggestedDomain.slice(domainFragment.length),
+  };
+}
+
+function setupEmailAutocomplete(inputId, nextFieldId) {
+  const input = document.getElementById(inputId);
+  const mirror = document.getElementById(inputId + 'Mirror');
+  const ghost = document.getElementById(inputId + 'Ghost');
+  if (!input || !mirror || !ghost) return;
+
+  function clearSuggestion() {
+    input.dataset.suggestion = '';
+    mirror.textContent = '';
+    ghost.textContent = '';
+    ghost.style.left = '14px';
+  }
+
+  function renderSuggestion() {
+    let caretAtEnd = document.activeElement === input;
+    if (caretAtEnd && typeof input.selectionStart === 'number' && typeof input.selectionEnd === 'number') {
+      caretAtEnd =
+        input.selectionStart === input.value.length &&
+        input.selectionEnd === input.value.length;
+    }
+
+    if (!caretAtEnd) {
+      clearSuggestion();
+      return;
+    }
+
+    const suggestion = getEmailSuggestion(input.value);
+    if (!suggestion) {
+      clearSuggestion();
+      return;
+    }
+
+    mirror.textContent = input.value;
+    const mirrorWidth = mirror.getBoundingClientRect().width;
+    const ghostLeft = 14 + mirrorWidth - input.scrollLeft;
+    const maxLeft = input.clientWidth - 28;
+
+    if (ghostLeft >= maxLeft) {
+      clearSuggestion();
+      return;
+    }
+
+    input.dataset.suggestion = suggestion.fullValue;
+    ghost.style.left = `${ghostLeft}px`;
+    ghost.textContent = suggestion.suffix;
+  }
+
+  function acceptSuggestion() {
+    if (!input.dataset.suggestion) return false;
+    input.value = input.dataset.suggestion;
+    clearSuggestion();
+    return true;
+  }
+
+  ['input', 'focus', 'click', 'keyup'].forEach(eventName => {
+    input.addEventListener(eventName, renderSuggestion);
+  });
+
+  input.addEventListener('keydown', event => {
+    if (!input.dataset.suggestion) return;
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      acceptSuggestion();
+      return;
+    }
+
+    if (event.key === 'Tab' && !event.shiftKey) {
+      event.preventDefault();
+      acceptSuggestion();
+      if (nextFieldId) {
+        const nextField = document.getElementById(nextFieldId);
+        if (nextField) nextField.focus();
+      }
+    }
+  });
+
+  input.addEventListener('blur', clearSuggestion);
+}
+
+/* ───────────────── NAVIGATION ───────────────── */
+function showStep(step) {
+  document.querySelectorAll('.form-section, .review-section, .success-screen').forEach(el => {
+    el.classList.remove('active');
+  });
+  if (step <= 3) {
+    document.getElementById('sec' + step).classList.add('active');
+  } else if (step === 4) {
+    buildReview();
+    document.getElementById('sec4').classList.add('active');
+  }
+}
+
+function goNext() {
+  if (currentStep < TOTAL_STEPS) {
+    if (!validateStep(currentStep)) return;
+    currentStep++;
+    showStep(currentStep);
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    // Submit
+    submitForm();
+  }
+}
+
+function goBack() {
+  if (currentStep > 1) {
+    currentStep--;
+    showStep(currentStep);
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+/* ───────────────── VALIDATION ───────────────── */
+function setField(id, state, message) {
+  const f = document.getElementById('f-' + id);
+  if (!f) return;
+  f.classList.remove('valid', 'error');
+  if (state) f.classList.add(state);
+  const msg = f.querySelector('.msg');
+  if (msg) {
+    msg.textContent = state === 'error' ? '⚠ ' + message :
+                      state === 'valid' ? '✓ ' + message : '';
+  }
+}
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function emailsMatch(email, confirmation) {
+  return email.toLowerCase() === confirmation.toLowerCase();
+}
+
+function validateTipoDocField() {
+  if (!getVal('tipoDoc')) {
+    setField('tipoDoc', 'error', 'Seleccioná el tipo de documento');
+    return false;
+  }
+  setField('tipoDoc', 'valid', '');
+  return true;
+}
+
+function validateNroDocField() {
+  const doc = getVal('nroDoc').replace(/\D/g, '');
+  if (!doc) {
+    setField('nroDoc', 'error', 'Ingresá tu número de documento');
+    return false;
+  }
+  if (doc.length < 7 || doc.length > 11) {
+    setField('nroDoc', 'error', 'Número de documento inválido');
+    return false;
+  }
+  setField('nroDoc', 'valid', '');
+  return true;
+}
+
+function validateFechaNacField() {
+  const fn = getVal('fechaNac');
+  if (!fn) {
+    setField('fechaNac', 'error', 'Ingresá tu fecha de nacimiento');
+    return false;
+  }
+
+  const birth = new Date(fn);
+  const today = new Date();
+  const age = today.getFullYear() - birth.getFullYear() -
+    (today < new Date(today.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
+
+  if (birth > today) {
+    setField('fechaNac', 'error', 'La fecha no puede ser en el futuro');
+    return false;
+  }
+  if (age < 13) {
+    setField('fechaNac', 'error', 'Debés tener al menos 13 años');
+    return false;
+  }
+
+  setField('fechaNac', 'valid', '');
+  return true;
+}
+
+function sanitizePhoneNumber(value) {
+  return value.replace(/\D/g, '').slice(0, 11);
+}
+
+function validateTelefonoField() {
+  const telefonoInput = document.getElementById('telefono');
+  const tel = sanitizePhoneNumber(telefonoInput.value);
+  telefonoInput.value = tel;
+
+  if (!tel) {
+    setField('telefono', 'error', 'Ingresá tu número de celular');
+    return false;
+  }
+  if (tel.length < 8 || tel.length > 11) {
+    setField('telefono', 'error', 'Ingresá un número válido de 8 a 11 dígitos');
+    return false;
+  }
+
+  setField('telefono', 'valid', '');
+  return true;
+}
+
+function sanitizeStreetNumber(value) {
+  return value.replace(/\D/g, '').slice(0, 6);
+}
+
+function validateNumeroField() {
+  const numeroInput = document.getElementById('numero');
+  const num = sanitizeStreetNumber(numeroInput.value);
+  numeroInput.value = num;
+
+  if (!num) {
+    setField('numero', 'error', 'Ingresá el número de la calle');
+    return false;
+  }
+
+  setField('numero', 'valid', '');
+  return true;
+}
+
+function getPasswordRules(password) {
+  return [
+    {
+      id: 'Length',
+      met: password.length >= 8,
+      message: 'La contraseña debe tener al menos 8 caracteres',
+    },
+    {
+      id: 'Upper',
+      met: /[A-Z]/.test(password),
+      message: 'Incluí al menos una letra mayúscula',
+    },
+    {
+      id: 'Number',
+      met: /[0-9]/.test(password),
+      message: 'Incluí al menos un número',
+    },
+  ];
+}
+
+function renderPasswordRules(password) {
+  const hasValue = password.length > 0;
+  const rules = getPasswordRules(password);
+
+  rules.forEach(rule => {
+    const item = document.getElementById('pwRule' + rule.id);
+    if (!item) return;
+
+    const icon = item.querySelector('.rule-icon');
+    item.classList.remove('pending', 'unmet', 'met');
+
+    if (rule.met) {
+      item.classList.add('met');
+      icon.textContent = '✓';
+      return;
+    }
+
+    item.classList.add(hasValue ? 'unmet' : 'pending');
+    icon.textContent = '•';
+  });
+
+  return rules;
+}
+
+function validatePasswordField(showError = false) {
+  const passwordInput = document.getElementById('password');
+  const pw = passwordInput.value;
+  const rules = renderPasswordRules(pw);
+  const firstUnmetRule = rules.find(rule => !rule.met);
+  const shouldShowError = showError || passwordInput.dataset.touched === 'true';
+
+  checkStrength(pw);
+
+  if (showError) passwordInput.dataset.touched = 'true';
+
+  if (!pw) {
+    setField('password', shouldShowError ? 'error' : '', shouldShowError ? 'Ingresá una contraseña' : '');
+    return false;
+  }
+
+  if (firstUnmetRule) {
+    setField('password', shouldShowError ? 'error' : '', shouldShowError ? firstUnmetRule.message : '');
+    return false;
+  }
+
+  setField('password', 'valid', '');
+  return true;
+}
+
+function setupPasswordValidation() {
+  const passwordInput = document.getElementById('password');
+  if (!passwordInput) return;
+
+  validatePasswordField(false);
+  passwordInput.addEventListener('input', () => validatePasswordField(false));
+  passwordInput.addEventListener('blur', () => validatePasswordField(true));
+}
+
+function validateStep(step) {
+  let ok = true;
+
+  if (step === 1) {
+    // Nombre
+    if (!getVal('nombre') || getVal('nombre').length < 2) {
+      setField('nombre', 'error', 'Ingresá tu nombre (mín. 2 caracteres)'); ok = false;
+    } else setField('nombre', 'valid', '');
+
+    // Apellido
+    if (!getVal('apellido') || getVal('apellido').length < 2) {
+      setField('apellido', 'error', 'Ingresá tu apellido (mín. 2 caracteres)'); ok = false;
+    } else setField('apellido', 'valid', '');
+
+    // Tipo doc
+    if (!validateTipoDocField()) ok = false;
+
+    // Nro doc
+    if (!validateNroDocField()) ok = false;
+
+    // Fecha nac
+    if (!validateFechaNacField()) ok = false;
+  }
+
+  if (step === 2) {
+    // Email
+    const email = getVal('email');
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRe.test(email)) {
+      setField('email', 'error', 'Ingresá un correo electrónico válido'); ok = false;
+    } else setField('email', 'valid', '');
+
+    // Confirm email
+    const emailConf = getVal('emailConf');
+    if (!emailConf) {
+      setField('emailConf', 'error', 'Confirmá tu correo electrónico'); ok = false;
+    } else if (!emailsMatch(email, emailConf)) {
+      setField('emailConf', 'error', 'Los correos no coinciden'); ok = false;
+    } else setField('emailConf', 'valid', '');
+
+    // Teléfono
+    if (!validateTelefonoField()) ok = false;
+
+    // Password
+    if (!validatePasswordField(true)) ok = false;
+  }
+
+  if (step === 3) {
+    // País
+    if (!getVal('pais')) {
+      setField('pais', 'error', 'Seleccioná tu país de residencia'); ok = false;
+    } else setField('pais', 'valid', '');
+
+    // Provincia
+    if (!getVal('provincia')) {
+      setField('provincia', 'error', 'Seleccioná una provincia o estado'); ok = false;
+    } else setField('provincia', 'valid', '');
+
+    // Localidad
+    if (!getVal('localidad') || getVal('localidad').length < 2) {
+      setField('localidad', 'error', 'Ingresá la localidad'); ok = false;
+    } else setField('localidad', 'valid', '');
+
+    // Código postal
+    const cp = getVal('codPostal');
+    if (!cp || cp.length < 4) {
+      setField('codPostal', 'error', 'Ingresá un código postal válido'); ok = false;
+    } else setField('codPostal', 'valid', '');
+
+    // Calle
+    if (!getVal('calle') || getVal('calle').length < 2) {
+      setField('calle', 'error', 'Ingresá el nombre de la calle'); ok = false;
+    } else setField('calle', 'valid', '');
+
+    // Número
+    if (!validateNumeroField()) ok = false;
+  }
+
+  if (!ok) {
+    const card = document.getElementById('formCard');
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 400);
+  }
+
+  return ok;
+}
+
+/* ───────────────── LIVE VALIDATION ───────────────── */
+function setupLiveValidation() {
+  const liveFields = [
+    { id: 'nombre',    check: v => v.length >= 2, msg: 'Mínimo 2 caracteres' },
+    { id: 'apellido',  check: v => v.length >= 2, msg: 'Mínimo 2 caracteres' },
+    { id: 'email',     check: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v), msg: 'Formato inválido' },
+    { id: 'localidad', check: v => v.length >= 2, msg: 'Mínimo 2 caracteres' },
+  ];
+
+  liveFields.forEach(({ id, check, msg }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('blur', () => {
+      const v = el.value.trim();
+      if (!v) { setField(id, '', ''); return; }
+      setField(id, check(v) ? 'valid' : 'error', check(v) ? '' : msg);
+    });
+  });
+
+  // Email confirm live
+  document.getElementById('emailConf').addEventListener('blur', () => {
+    const e = getVal('email'), ec = getVal('emailConf');
+    if (!ec) return;
+    setField('emailConf', emailsMatch(e, ec) ? 'valid' : 'error', emailsMatch(e, ec) ? '' : 'Los correos no coinciden');
+  });
+
+  document.getElementById('tipoDoc').addEventListener('change', validateTipoDocField);
+  document.getElementById('tipoDoc').addEventListener('blur', validateTipoDocField);
+  document.getElementById('nroDoc').addEventListener('blur', validateNroDocField);
+  document.getElementById('fechaNac').addEventListener('change', validateFechaNacField);
+  document.getElementById('fechaNac').addEventListener('blur', validateFechaNacField);
+  document.getElementById('telefono').addEventListener('blur', validateTelefonoField);
+  document.getElementById('numero').addEventListener('blur', validateNumeroField);
+
+  // Doc number — allow only digits and dashes
+  document.getElementById('nroDoc').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9\-]/g, '');
+  });
+
+  // Phone — allow only digits
+  document.getElementById('telefono').addEventListener('input', function() {
+    this.value = sanitizePhoneNumber(this.value);
+  });
+
+  document.getElementById('telAlt').addEventListener('input', function() {
+    this.value = sanitizePhoneNumber(this.value);
+  });
+
+  document.getElementById('numero').addEventListener('input', function() {
+    this.value = sanitizeStreetNumber(this.value);
+  });
+}
+
+/* ───────────────── PASSWORD STRENGTH ───────────────── */
+function checkStrength(passwordValue) {
+  const pw = passwordValue ?? document.getElementById('password').value;
+  const fill = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  const baseScore = getPasswordRules(pw).filter(rule => rule.met).length;
+
+  let score = baseScore;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  if (pw.length >= 12)   score++;
+
+  const levels = [
+    { pct: '0%',   color: 'transparent', text: 'Debe cumplir estos requisitos' },
+    { pct: '25%',  color: '#E53E3E', text: 'Muy débil' },
+    { pct: '50%',  color: '#DD6B20', text: 'Débil' },
+    { pct: '75%',  color: '#D69E2E', text: 'Buena' },
+    { pct: '90%',  color: '#38A169', text: 'Fuerte' },
+    { pct: '100%', color: '#2D7A4F', text: 'Muy fuerte ✓' },
+  ];
+
+  const lv = levels[Math.min(score, 5)];
+  fill.style.width = lv.pct;
+  fill.style.background = lv.color;
+  label.textContent = lv.text;
+  label.style.color = pw ? lv.color : 'var(--ink-lighter)';
+}
+
+function togglePw(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  } else {
+    input.type = 'password';
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  }
+}
+
+/* ───────────────── BUILD REVIEW ───────────────── */
+function buildReview() {
+  const data = {
+    personal: [
+      { label: 'Nombre', value: getVal('nombre') + ' ' + getVal('apellido') },
+      { label: 'Documento', value: getVal('tipoDoc') + ' ' + getVal('nroDoc') },
+      { label: 'Fecha de nacimiento', value: formatDate(getVal('fechaNac')) },
+      { label: 'Género', value: getVal('genero') || 'No indicado' },
+    ],
+    contacto: [
+      { label: 'Email', value: getVal('email') },
+      { label: 'Teléfono', value: document.getElementById('telPais').value + ' ' + getVal('telefono') },
+      { label: 'Tel. alternativo', value: getVal('telAlt') || '—' },
+    ],
+    direccion: [
+      { label: 'País de residencia', value: getVal('pais') },
+      { label: 'Provincia', value: getVal('provincia') },
+      { label: 'Localidad', value: getVal('localidad') },
+      { label: 'Código postal', value: getVal('codPostal') },
+      { label: 'Calle y número', value: getVal('calle') + ' ' + getVal('numero') + (getVal('piso') ? ', Piso ' + getVal('piso') : '') + (getVal('depto') ? ' Depto. ' + getVal('depto') : '') },
+      { label: 'Entre calles', value: getVal('entrecalles') || '—' },
+    ],
+  };
+
+  const sections = [
+    { title: '👤 Datos personales', key: 'personal' },
+    { title: '📬 Datos de contacto', key: 'contacto' },
+    { title: '📍 Dirección', key: 'direccion' },
+  ];
+
+  let html = '';
+  sections.forEach(s => {
+    html += `<div class="review-group">
+      <h3>${s.title}</h3>
+      <div class="review-grid">
+        ${data[s.key].map(i => `
+          <div class="review-item">
+            <div class="rl">${i.label}</div>
+            <div class="rv">${i.value || '—'}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('reviewContent').innerHTML = html;
+}
+
+function formatDate(str) {
+  if (!str) return '—';
+  const [y, m, d] = str.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/* ───────────────── SUBMIT ───────────────── */
+function submitForm() {
+  // Simulate sending
+  const btn = document.getElementById('btnNext');
+  btn.disabled = true;
+  btn.textContent = '⏳ Enviando...';
+
+  setTimeout(() => {
+    // Hide all sections
+    document.querySelectorAll('.form-section, .review-section').forEach(el => el.classList.remove('active'));
+    document.getElementById('successScreen').classList.add('active');
+    document.getElementById('formNav').style.display = 'none';
+    document.getElementById('progressWrap').style.display = 'none';
+
+    // Reference number
+    const ref = 'SOL-' + Date.now().toString(36).toUpperCase();
+    document.getElementById('refNum').textContent = ref;
+  }, 1200);
+}
+</script>
+</body>
+</html>
