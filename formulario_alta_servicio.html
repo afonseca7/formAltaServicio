@@ -621,7 +621,7 @@
     </div>
     <div class="field-row col-1">
       <div class="field" id="f-nombreCompleto">
-        <label>Nombre completo</label>
+        <label>Nombre(s) y apellido(s)</label>
         <input type="text" id="nombreCompleto" placeholder="Ej: Juan Fermín González" autocomplete="name" />
         <span class="msg"></span>
       </div>
@@ -1431,9 +1431,9 @@ function validateStep(step) {
   let ok = true;
 
   if (step === 1) {
-    // Nombre completo
+    // Nombre(s) y apellido(s)
     if (!getVal('nombreCompleto') || getVal('nombreCompleto').length < 4) {
-      setField('nombreCompleto', 'error', 'Ingresá tu nombre completo (mín. 4 caracteres)'); ok = false;
+      setField('nombreCompleto', 'error', 'Ingresá tu nombre(s) y apellido(s) (mín. 4 caracteres)'); ok = false;
     } else setField('nombreCompleto', 'valid', '');
 
     // Tipo doc
@@ -1613,7 +1613,7 @@ function togglePw(id, btn) {
 function buildReview() {
   const data = {
     personal: [
-      { label: 'Nombre completo', value: getVal('nombreCompleto') },
+      { label: 'Nombre(s) y apellido(s)', value: getVal('nombreCompleto') },
       { label: 'Documento', value: getVal('tipoDoc') + ' ' + getVal('nroDoc') },
       { label: 'Fecha de nacimiento', value: formatDate(getVal('fechaNac')) },
       { label: 'Género', value: getVal('genero') || 'No indicado' },
