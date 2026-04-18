@@ -600,11 +600,9 @@
         <p>Información de identidad del solicitante</p>
       </div>
     </div>
-    <p class="req-legend"><span>*</span> Campo obligatorio</p>
-
     <div class="field-row col-1">
       <div class="field" id="f-nombreCompleto">
-        <label>Nombre completo <span class="req">*</span></label>
+        <label>Nombre completo</label>
         <input type="text" id="nombreCompleto" placeholder="Ej: Juan Fermín González" autocomplete="name" />
         <span class="msg"></span>
       </div>
@@ -612,7 +610,7 @@
 
     <div class="field-row col-2">
       <div class="field" id="f-tipoDoc">
-        <label>Tipo de documento <span class="req">*</span></label>
+        <label>Tipo de documento</label>
         <select id="tipoDoc">
           <option value="">Seleccioná...</option>
           <option value="DNI">DNI</option>
@@ -624,7 +622,7 @@
         <span class="msg"></span>
       </div>
       <div class="field" id="f-nroDoc">
-        <label>Número de documento <span class="req">*</span></label>
+        <label>Número de documento</label>
         <input type="text" id="nroDoc" placeholder="Ej: 30456789" inputmode="numeric" autocomplete="off" />
         <span class="msg"></span>
       </div>
@@ -632,7 +630,7 @@
 
     <div class="field-row col-2">
       <div class="field" id="f-fechaNac">
-        <label>Fecha de nacimiento <span class="req">*</span></label>
+        <label>Fecha de nacimiento</label>
         <div class="autocomplete-wrap">
           <input type="text" id="fechaNac" inputmode="numeric" autocomplete="bday" maxlength="10" />
           <span class="mirror-text" id="fechaNacMirror" aria-hidden="true"></span>
@@ -641,7 +639,7 @@
         <span class="msg"></span>
       </div>
       <div class="field" id="f-genero">
-        <label>Género <span class="opt">opcional</span></label>
+        <label>Género <span class="opt">(opcional)</span></label>
         <select id="genero">
           <option value="">Prefiero no indicar</option>
           <option value="Femenino">Femenino</option>
@@ -663,11 +661,9 @@
         <p>Canales para comunicarnos con vos</p>
       </div>
     </div>
-    <p class="req-legend"><span>*</span> Campo obligatorio</p>
-
     <div class="field-row col-1">
       <div class="field" id="f-email">
-        <label>Correo electrónico <span class="req">*</span></label>
+        <label>Correo electrónico</label>
         <div class="autocomplete-wrap">
           <input type="email" id="email" placeholder="ejemplo@correo.com" autocomplete="email" inputmode="email" />
           <span class="mirror-text" id="emailMirror" aria-hidden="true"></span>
@@ -679,7 +675,7 @@
 
     <div class="field-row col-1">
       <div class="field" id="f-emailConf">
-        <label>Confirmá tu correo <span class="req">*</span></label>
+        <label>Confirmá tu correo</label>
         <div class="autocomplete-wrap">
           <input type="email" id="emailConf" placeholder="Repetí tu correo electrónico" autocomplete="off" inputmode="email" />
           <span class="mirror-text" id="emailConfMirror" aria-hidden="true"></span>
@@ -691,7 +687,7 @@
 
     <div class="field-row col-1">
       <div class="field" id="f-telefono">
-        <label>Teléfono / Celular <span class="req">*</span></label>
+        <label>Teléfono / Celular</label>
         <div class="phone-row">
           <select id="telPais">
             <option value="+54">🇦🇷 +54</option>
@@ -712,7 +708,7 @@
 
     <div class="field-row col-1">
       <div class="field" id="f-telAlt">
-        <label>Teléfono alternativo <span class="opt">opcional</span></label>
+        <label>Teléfono alternativo <span class="opt">(opcional)</span></label>
         <input type="text" id="telAlt" placeholder="Otro número de contacto" inputmode="numeric" autocomplete="off" maxlength="11" />
         <span class="msg"></span>
       </div>
@@ -720,7 +716,7 @@
 
     <div class="field-row col-1">
       <div class="field" id="f-password">
-        <label>Contraseña de acceso <span class="req">*</span></label>
+        <label>Contraseña de acceso</label>
         <div class="input-wrap">
           <input type="password" id="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
           <button class="toggle-pw" type="button" onclick="togglePw('password', this)" title="Mostrar/ocultar contraseña">
@@ -757,11 +753,9 @@
         <p>Domicilio del solicitante</p>
       </div>
     </div>
-    <p class="req-legend"><span>*</span> Campo obligatorio</p>
-
     <div class="field-row col-2">
       <div class="field" id="f-pais">
-        <label>País de residencia <span class="req">*</span></label>
+        <label>País de residencia</label>
         <select id="pais" onchange="onPaisChange()">
           <option value="">Seleccioná...</option>
           <option value="Argentina" selected>Argentina</option>
@@ -778,7 +772,7 @@
         <span class="msg"></span>
       </div>
       <div class="field" id="f-provincia">
-        <label>Provincia / Estado <span class="req">*</span></label>
+        <label>Provincia / Estado</label>
         <select id="provincia">
           <option value="">Seleccioná primero el país</option>
         </select>
@@ -788,12 +782,12 @@
 
     <div class="field-row col-2">
       <div class="field" id="f-localidad">
-        <label>Localidad / Ciudad <span class="req">*</span></label>
+        <label>Localidad / Ciudad</label>
         <input type="text" id="localidad" placeholder="Ej: Campana" autocomplete="address-level2" />
         <span class="msg"></span>
       </div>
       <div class="field" id="f-codPostal">
-        <label>Código postal <span class="req">*</span></label>
+        <label>Código postal</label>
         <input type="text" id="codPostal" placeholder="Ej: B2804" inputmode="text" autocomplete="postal-code" maxlength="8" />
         <span class="msg"></span>
       </div>
@@ -801,12 +795,12 @@
 
     <div class="field-row col-2">
       <div class="field" id="f-calle">
-        <label>Calle <span class="req">*</span></label>
+        <label>Calle</label>
         <input type="text" id="calle" placeholder="Ej: Av. Pte. Perón" autocomplete="address-line1" />
         <span class="msg"></span>
       </div>
       <div class="field" id="f-numero">
-        <label>Número <span class="req">*</span></label>
+        <label>Número</label>
         <input type="text" id="numero" placeholder="Ej: 1234" inputmode="numeric" maxlength="6" />
         <span class="msg"></span>
       </div>
@@ -814,17 +808,17 @@
 
     <div class="field-row col-3">
       <div class="field" id="f-piso">
-        <label>Piso <span class="opt">opcional</span></label>
+        <label>Piso <span class="opt">(opcional)</span></label>
         <input type="text" id="piso" placeholder="Ej: 3" />
         <span class="msg"></span>
       </div>
       <div class="field" id="f-depto">
-        <label>Depto. <span class="opt">opcional</span></label>
+        <label>Depto. <span class="opt">(opcional)</span></label>
         <input type="text" id="depto" placeholder="Ej: A" />
         <span class="msg"></span>
       </div>
       <div class="field" id="f-entrecalles">
-        <label>Entre calles <span class="opt">opcional</span></label>
+        <label>Entre calles <span class="opt">(opcional)</span></label>
         <input type="text" id="entrecalles" placeholder="Ej: San Martín y Belgrano" />
         <span class="msg"></span>
       </div>
