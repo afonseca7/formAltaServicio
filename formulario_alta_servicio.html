@@ -444,6 +444,8 @@
       padding: 64px 36px;
       text-align: center;
       display: none;
+      position: relative;
+      padding-bottom: 88px;
     }
     .success-screen.active { display: block; }
     .success-screen .icon {
@@ -475,6 +477,23 @@
       color: var(--ink-soft);
     }
     .success-screen .ref strong { color: var(--ink); }
+    .success-screen .authors {
+      position: absolute;
+      right: 24px;
+      bottom: 18px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--ink-lighter);
+      letter-spacing: .02em;
+      margin: 0;
+    }
+    @media (max-width: 540px) {
+      .success-screen .authors {
+        right: 16px;
+        bottom: 14px;
+        font-size: 11px;
+      }
+    }
 
     /* ── Animations ── */
     @keyframes fadeUp {
@@ -796,12 +815,12 @@
     <div class="field-row col-2">
       <div class="field" id="f-calle">
         <label>Calle</label>
-        <input type="text" id="calle" placeholder="Ej: Av. Pte. Perón" autocomplete="address-line1" />
+        <input type="text" id="calle" placeholder="Ej: San Martín" autocomplete="address-line1" />
         <span class="msg"></span>
       </div>
       <div class="field" id="f-numero">
         <label>Número</label>
-        <input type="text" id="numero" placeholder="Ej: 1234" inputmode="numeric" maxlength="6" />
+        <input type="text" id="numero" placeholder="Ej: 1170" inputmode="numeric" maxlength="6" />
         <span class="msg"></span>
       </div>
     </div>
@@ -819,7 +838,7 @@
       </div>
       <div class="field" id="f-entrecalles">
         <label>Entre calles <span class="opt">(opcional)</span></label>
-        <input type="text" id="entrecalles" placeholder="Ej: San Martín y Belgrano" />
+        <input type="text" id="entrecalles" placeholder="Ej: Liniers y Andrés Del Pino" />
         <span class="msg"></span>
       </div>
     </div>
@@ -843,6 +862,7 @@
     <h2>¡Solicitud enviada!</h2>
     <p>Recibimos tu solicitud de alta de servicio. En breve te contactaremos por correo electrónico para confirmar el proceso.</p>
     <div class="ref">Número de referencia: <strong id="refNum"></strong></div>
+    <p class="authors">Andres Fonseca, Tomas Puente, Martin Aristia</p>
   </div>
 
   <!-- Navigation -->
