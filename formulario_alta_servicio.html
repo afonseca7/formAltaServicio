@@ -602,15 +602,10 @@
     </div>
     <p class="req-legend"><span>*</span> Campo obligatorio</p>
 
-    <div class="field-row col-2">
-      <div class="field" id="f-nombre">
-        <label>Nombre/s <span class="req">*</span></label>
-        <input type="text" id="nombre" placeholder="Ej: Juan Fermín " autocomplete="given-name" />
-        <span class="msg"></span>
-      </div>
-      <div class="field" id="f-apellido">
-        <label>Apellido/s <span class="req">*</span></label>
-        <input type="text" id="apellido" placeholder="Ej: González" autocomplete="family-name" />
+    <div class="field-row col-1">
+      <div class="field" id="f-nombreCompleto">
+        <label>Nombre completo <span class="req">*</span></label>
+        <input type="text" id="nombreCompleto" placeholder="Ej: Juan Fermín González" autocomplete="name" />
         <span class="msg"></span>
       </div>
     </div>
@@ -978,11 +973,11 @@ function normalizeText(value) {
 }
 
 function setupTipoDocKeyboardSupport() {
-  const apellido = document.getElementById('apellido');
+  const nombreCompleto = document.getElementById('nombreCompleto');
   const tipoDoc = document.getElementById('tipoDoc');
-  if (!apellido || !tipoDoc) return;
+  if (!nombreCompleto || !tipoDoc) return;
 
-  apellido.addEventListener('keydown', event => {
+  nombreCompleto.addEventListener('keydown', event => {
     if (event.key === 'Tab' && !event.shiftKey) {
       event.preventDefault();
       tipoDoc.focus();
@@ -1422,15 +1417,10 @@ function validateStep(step) {
   let ok = true;
 
   if (step === 1) {
-    // Nombre
-    if (!getVal('nombre') || getVal('nombre').length < 2) {
-      setField('nombre', 'error', 'Ingresá tu nombre (mín. 2 caracteres)'); ok = false;
-    } else setField('nombre', 'valid', '');
-
-    // Apellido
-    if (!getVal('apellido') || getVal('apellido').length < 2) {
-      setField('apellido', 'error', 'Ingresá tu apellido (mín. 2 caracteres)'); ok = false;
-    } else setField('apellido', 'valid', '');
+    // Nombre completo
+    if (!getVal('nombreCompleto') || getVal('nombreCompleto').length < 4) {
+      setField('nombreCompleto', 'error', 'Ingresá tu nombre completo (mín. 4 caracteres)'); ok = false;
+    } else setField('nombreCompleto', 'valid', '');
 
     // Tipo doc
     if (!validateTipoDocField()) ok = false;
@@ -1508,8 +1498,7 @@ function validateStep(step) {
 /* ───────────────── LIVE VALIDATION ───────────────── */
 function setupLiveValidation() {
   const liveFields = [
-    { id: 'nombre',    check: v => v.length >= 2, msg: 'Mínimo 2 caracteres' },
-    { id: 'apellido',  check: v => v.length >= 2, msg: 'Mínimo 2 caracteres' },
+    { id: 'nombreCompleto', check: v => v.length >= 4, msg: 'Mínimo 4 caracteres' },
     { id: 'email',     check: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v), msg: 'Formato inválido' },
     { id: 'localidad', check: v => v.length >= 2, msg: 'Mínimo 2 caracteres' },
   ];
@@ -1610,7 +1599,7 @@ function togglePw(id, btn) {
 function buildReview() {
   const data = {
     personal: [
-      { label: 'Nombre', value: getVal('nombre') + ' ' + getVal('apellido') },
+      { label: 'Nombre completo', value: getVal('nombreCompleto') },
       { label: 'Documento', value: getVal('tipoDoc') + ' ' + getVal('nroDoc') },
       { label: 'Fecha de nacimiento', value: formatDate(getVal('fechaNac')) },
       { label: 'Género', value: getVal('genero') || 'No indicado' },
