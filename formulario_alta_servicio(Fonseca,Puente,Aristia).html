@@ -83,14 +83,22 @@
     .progress-steps {
       display: flex;
       gap: 0;
-      align-items: center;
+      align-items: flex-start;
     }
     .step-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       flex: 1;
+      position: relative;
     }
-    .step-item:last-child { flex: 0; }
+    .step-item:last-child { flex: 0 0 32px; }
+    .step-node {
+      width: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
     .step-circle {
       width: 32px;
       height: 32px;
@@ -123,33 +131,26 @@
       flex: 1;
       height: 2px;
       background: var(--border);
-      margin: 0 4px;
+      margin: 15px 8px 0;
       transition: background .3s;
     }
     .step-line.done { background: var(--success); }
-    .step-label {
+    .step-node .lbl {
       font-size: 11px;
       color: var(--ink-lighter);
-      margin-top: 6px;
+      margin-top: 8px;
       text-align: center;
       font-weight: 500;
+      white-space: nowrap;
     }
-    .step-label.active { color: var(--accent); }
-    .step-label.done { color: var(--success); }
-    .steps-labels {
-      display: flex;
-      margin-top: 8px;
-    }
-    .steps-labels .lbl { flex: 1; text-align: center; font-size: 11px; font-weight: 500; color: var(--ink-lighter); }
-    .steps-labels .lbl.active { color: var(--accent); }
-    .steps-labels .lbl.done { color: var(--success); }
-    .steps-labels .lbl:last-child { flex: 0 0 32px; }
+    .step-node .lbl.active { color: var(--accent); }
+    .step-node .lbl.done { color: var(--success); }
 
     /* ── Card / Form ── */
     .form-card {
       max-width: 680px;
       margin: 0 auto;
-      background: var(--surface);
+      background: var(--bg);
       border-radius: 18px;
       box-shadow: var(--shadow-lg);
       overflow: hidden;
@@ -238,7 +239,7 @@
       font-family: 'DM Sans', sans-serif;
       font-size: 14px;
       color: var(--ink);
-      background: var(--bg);
+      background: var(--surface);
       border: 1.5px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 10px 14px;
@@ -584,26 +585,32 @@
 <div class="progress-wrap" id="progressWrap">
   <div class="progress-steps">
     <div class="step-item">
-      <div class="step-circle active" id="sc1">1</div>
+      <div class="step-node">
+        <div class="step-circle active" id="sc1">1</div>
+        <div class="lbl active" id="lbl1">Datos personales</div>
+      </div>
       <div class="step-line" id="sl1"></div>
     </div>
     <div class="step-item">
-      <div class="step-circle" id="sc2">2</div>
+      <div class="step-node">
+        <div class="step-circle" id="sc2">2</div>
+        <div class="lbl" id="lbl2">Contacto</div>
+      </div>
       <div class="step-line" id="sl2"></div>
     </div>
     <div class="step-item">
-      <div class="step-circle" id="sc3">3</div>
+      <div class="step-node">
+        <div class="step-circle" id="sc3">3</div>
+        <div class="lbl" id="lbl3">Dirección</div>
+      </div>
       <div class="step-line" id="sl3"></div>
     </div>
     <div class="step-item">
-      <div class="step-circle" id="sc4">4</div>
+      <div class="step-node">
+        <div class="step-circle" id="sc4">4</div>
+        <div class="lbl" id="lbl4">Revisión</div>
+      </div>
     </div>
-  </div>
-  <div class="steps-labels">
-    <div class="lbl active" id="lbl1">Datos personales</div>
-    <div class="lbl" id="lbl2">Contacto</div>
-    <div class="lbl" id="lbl3">Dirección</div>
-    <div class="lbl" id="lbl4" style="flex:0 0 32px;text-align:center">Revisión</div>
   </div>
 </div>
 
